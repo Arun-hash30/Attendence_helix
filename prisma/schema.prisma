@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int            @id @default(autoincrement())
+  email              String         @unique
+  password           String
+  name               String?
+  phone              String?
+  role               String         @default("user")
+  level              String         @default("basic")
+  tenantId           String?
+  isVerified         Boolean        @default(false)
+  isActive           Boolean        @default(true)
+  lastLogin          DateTime?
+  resetToken         String?
+  resetTokenExpiry   DateTime?
+  verificationToken  String?
+  verificationExpiry DateTime?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  leaveBalances      LeaveBalance[]
+  approvedLeaves     LeaveRequest[] @relation("ApprovedBy")
+  leaveRequests      LeaveRequest[] @relation("UserLeaves")
+
+  @@index([tenantId])
+  @@map("users")
+}
+
+model LeaveBalance {
+  id          Int  @id @default(autoincrement())
+  userId      Int
+  year        Int
+  casualTotal Int  @default(12)
+  casualUsed  Int  @default(0)
+  sickTotal   Int  @default(6)
+  sickUsed    Int  @default(0)
+  user        User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, year])
+}
+
+model LeaveRequest {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  type       String
+  fromDate   DateTime
+  toDate     DateTime
+  days       Int
+  reason     String?
+  status     String    @default("PENDING")
+  approvedBy Int?
+  approvedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  admin      User?     @relation("ApprovedBy", fields: [approvedBy], references: [id])
+  user       User      @relation("UserLeaves", fields: [userId], references: [id])
+}
