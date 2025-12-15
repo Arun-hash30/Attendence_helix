@@ -277,7 +277,7 @@ export const DownloadPayslipModal: React.FC<Props> = ({
             </tr>
             <tr>
               <td><strong>Status:</strong> ${payslip.status}</td>
-              <td><strong>PAN:</strong> ${payslip.user?.pan || 'Not Provided'}</td>
+              <td><strong>Phone:</strong> ${payslip.user?.phone || 'Not Provided'}</td>
             </tr>
           </table>
         </div>
@@ -417,11 +417,6 @@ export const DownloadPayslipModal: React.FC<Props> = ({
         
         // Clean up the URL object
         URL.revokeObjectURL(link.href);
-        
-        // For better PDF experience, you could:
-        // 1. Use a PDF generation library (like jsPDF)
-        // 2. Use a backend API to generate actual PDF
-        // 3. Use browser's "Save as PDF" print option
         
         console.log('PDF download initiated (as HTML)');
       }
