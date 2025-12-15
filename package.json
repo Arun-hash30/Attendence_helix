@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@types/pg": "^8.15.5",
+    "@vercel/node": "^5.5.15",
     "@voilajsx/appkit": "latest",
     "@voilajsx/uikit": "latest",
     "bcrypt": "^5.1.1",
