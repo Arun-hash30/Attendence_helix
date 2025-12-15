@@ -35,41 +35,31 @@ export const config = {
       auth: 'Authorization',
     },
 
-    // Redirect configuration - environment configurable
+    // Redirect configuration
     redirects: {
-      // Where to send unauthenticated users
       loginPage: import.meta.env.VITE_LOGIN_PAGE || '/login',
-
-      // Where to send authenticated users after login
       afterLogin: import.meta.env.VITE_AFTER_LOGIN || '/dashboard',
-
-      // Where to send after logout
       afterLogout: import.meta.env.VITE_AFTER_LOGOUT || '/',
-
-      // Where to send authenticated users trying to access auth pages
       authenticatedRedirect: import.meta.env.VITE_AUTHENTICATED_REDIRECT || '/dashboard'
     }
   },
 
   // Route Access Control
   routes: {
-    // Auth-only routes (redirect to dashboard if authenticated)
+    // Auth-only routes
     authOnly: ['/', '/login', '/register', '/forgot-password', '/reset-password', '/auth/login', '/auth/register'],
 
-    // Public routes (accessible to everyone regardless of auth state)
+    // Public routes
     public: ['/about', '/help', '/contact', '/gallery', '/terms', '/privacy', '/auth/verify-email', '/auth/forgot-password', '/auth/reset-password'],
 
-    // Logout routes - special handling
+    // Logout routes
     logout: ['/logout', '/auth/logout'],
 
-    // Role-based routes (simple path matching)
+    // Role-based routes
     roles: {
-      // Admin routes - require admin.* roles
       '/user/admin': ['admin.tenant', 'admin.org', 'admin.system'],
       '/user/admin/users': ['admin.tenant', 'admin.org', 'admin.system'],
       '/user/admin/settings': ['admin.tenant', 'admin.org', 'admin.system'],
-
-      // Moderator+ routes - moderators and admins can access
       '/user/admin/list': ['moderator.review', 'moderator.approve', 'moderator.manage', 'admin.tenant', 'admin.org', 'admin.system']
     }
   }

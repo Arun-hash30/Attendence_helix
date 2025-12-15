@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@voilajsx/uikit/card';
+import { Button } from '@voilajsx/uikit/button';
 
-// ======================= Apply Leave Form =======================
 type LeaveFormProps = {
   onSubmit: (data: { type: 'CASUAL' | 'SICK'; fromDate: string; toDate: string; reason: string }) => void;
 };
@@ -37,67 +38,77 @@ export function ApplyLeaveForm({ onSubmit }: LeaveFormProps) {
   };
 
   return (
-    <form className="space-y-4 bg-white p-6 rounded shadow-md max-w-md" onSubmit={handleSubmit}>
-      <h2 className="text-xl font-semibold mb-2">Apply Leave</h2>
+    <Card className="max-w-md mx-auto shadow-lg border border-gray-200 bg-white rounded-lg overflow-hidden">
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold text-center">Apply Leave</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Leave Type */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Leave Type</label>
+            <select
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={form.type}
+              onChange={(e) => setForm({ ...form, type: e.target.value as 'CASUAL' | 'SICK' })}
+            >
+              <option value="CASUAL">Casual</option>
+              <option value="SICK">Sick</option>
+            </select>
+          </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">Leave Type</label>
-        <select
-          className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          value={form.type}
-          onChange={e => setForm({ ...form, type: e.target.value as 'CASUAL' | 'SICK' })}
-        >
-          <option value="CASUAL">Casual</option>
-          <option value="SICK">Sick</option>
-        </select>
-      </div>
+          {/* From Date */}
+          <div>
+            <label className="block text-sm font-medium mb-1">From</label>
+            <input
+              type="date"
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
+                errors.fromDate ? 'border-red-500 ring-red-300' : 'border-gray-300 ring-blue-400'
+              }`}
+              value={form.fromDate}
+              onChange={(e) => setForm({ ...form, fromDate: e.target.value })}
+            />
+            {errors.fromDate && <p className="text-red-500 text-xs mt-1">{errors.fromDate}</p>}
+          </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">From</label>
-        <input
-          type="date"
-          className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-            errors.fromDate ? 'border-red-500 ring-red-300' : 'border-gray-300 ring-blue-400'
-          }`}
-          value={form.fromDate}
-          onChange={e => setForm({ ...form, fromDate: e.target.value })}
-        />
-        {errors.fromDate && <p className="text-red-500 text-xs mt-1">{errors.fromDate}</p>}
-      </div>
+          {/* To Date */}
+          <div>
+            <label className="block text-sm font-medium mb-1">To</label>
+            <input
+              type="date"
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
+                errors.toDate ? 'border-red-500 ring-red-300' : 'border-gray-300 ring-blue-400'
+              }`}
+              value={form.toDate}
+              onChange={(e) => setForm({ ...form, toDate: e.target.value })}
+            />
+            {errors.toDate && <p className="text-red-500 text-xs mt-1">{errors.toDate}</p>}
+          </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">To</label>
-        <input
-          type="date"
-          className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-            errors.toDate ? 'border-red-500 ring-red-300' : 'border-gray-300 ring-blue-400'
-          }`}
-          value={form.toDate}
-          onChange={e => setForm({ ...form, toDate: e.target.value })}
-        />
-        {errors.toDate && <p className="text-red-500 text-xs mt-1">{errors.toDate}</p>}
-      </div>
+          {/* Reason */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Reason</label>
+            <textarea
+              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
+                errors.reason ? 'border-red-500 ring-red-300' : 'border-gray-300 ring-blue-400'
+              }`}
+              placeholder="Enter reason for leave"
+              value={form.reason}
+              onChange={(e) => setForm({ ...form, reason: e.target.value })}
+              rows={3}
+            />
+            {errors.reason && <p className="text-red-500 text-xs mt-1">{errors.reason}</p>}
+          </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">Reason</label>
-        <textarea
-          className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-            errors.reason ? 'border-red-500 ring-red-300' : 'border-gray-300 ring-blue-400'
-          }`}
-          placeholder="Enter reason for leave"
-          value={form.reason}
-          onChange={e => setForm({ ...form, reason: e.target.value })}
-          rows={3}
-        />
-        {errors.reason && <p className="text-red-500 text-xs mt-1">{errors.reason}</p>}
-      </div>
-
-      <button
-        type="submit"
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors font-medium"
-      >
-        Apply Leave
-      </button>
-    </form>
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors font-medium"
+          >
+            Apply Leave
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,0 +1,41 @@
+@baseUrl = http://localhost:3000/api/payslip
+@userId = 4
+
+
+### 🔹 Create Salary Structure (ADMIN)
+POST {{baseUrl}}/salary/{{userId}}
+Content-Type: application/json
+
+{
+  "earnings": {
+    "basic": 30000,
+    "hra": 15000,
+    "specialAllowance": 5000
+  },
+  "deductions": {
+    "pf": 1800,
+    "tax": 2500
+  },
+  "effectiveFrom": "2025-01-01"
+}
+
+
+### 🔹 Generate Payslip (ADMIN)
+POST {{baseUrl}}/generate
+Content-Type: application/json
+
+{
+  "userId": {{userId}},
+  "month": 9,
+  "year": 2025
+}
+
+
+### 🔹 Get My Payslips (USER)
+GET {{baseUrl}}/my/{{userId}}
+Content-Type: application/json
+
+
+### 🔹 Get All Payslips (ADMIN)
+GET {{baseUrl}}/admin/all
+Content-Type: application/json

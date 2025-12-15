@@ -70,27 +70,82 @@ export const Header: React.FC = () => {
   if (isAuthenticated) {
     // Authenticated user navigation
     navigationItems.push(
-      { key: 'dashboard', label: 'Dashboard', href: route('/dashboard'), icon: LayoutDashboard },
-      { key: 'profile', label: 'Profile', href: route('/profile'), icon: User },
-      { key: 'leave-history', label: 'Leave History', href: route('/leave/leave.history'), icon: FileText },
-      { key: 'apply-leave', label: 'Apply Leave', href: route('/leave/leave.apply'), icon: FileText }
+      {
+        key: 'dashboard',
+        label: 'Dashboard',
+        href: route('/dashboard'),
+        icon: LayoutDashboard,
+      },
+
+      // ⭐ Payslips Added ⭐
+      {
+        key: 'payslips',
+        label: 'Payslips',
+        href: route('/payslips'),
+        icon: FileText,
+      },
+
+      {
+        key: 'profile',
+        label: 'Profile',
+        href: route('/profile'),
+        icon: User,
+      },
+
+      {
+        key: 'leave-history',
+        label: 'Leave History',
+        href: route('/leave/leave.history'),
+        icon: FileText,
+      },
+      {
+        key: 'apply-leave',
+        label: 'Apply Leave',
+        href: route('/leave/leave.apply'),
+        icon: FileText,
+      }
     );
 
     // Admin-only navigation
     if (user && hasRole(user, ['admin.tenant', 'admin.org', 'admin.system'])) {
       navigationItems.push(
-        { key: 'admin', label: 'Admin', href: route('/admin'), icon: Shield },
-        { key: 'leave-admin', label: 'Leave Admin', href: route('/leave/leave.admin'), icon: FileText }
+        {
+          key: 'admin',
+          label: 'Admin',
+          href: route('/admin'),
+          icon: Shield,
+        },
+        {
+          key: 'leave-admin',
+          label: 'Leave Admin',
+          href: route('/leave/leave.admin'),
+          icon: FileText,
+        }
       );
     }
 
     // Sign Out
-    navigationItems.push({ key: 'logout', label: 'Sign Out', href: route('/logout'), icon: LogOut });
+    navigationItems.push({
+      key: 'logout',
+      label: 'Sign Out',
+      href: route('/logout'),
+      icon: LogOut,
+    });
   } else {
     // Public navigation
     navigationItems.push(
-      { key: 'login', label: 'Sign In', href: route('/auth/login'), icon: LogIn },
-      { key: 'register', label: 'Sign Up', href: route('/auth/register'), icon: UserPlus }
+      {
+        key: 'login',
+        label: 'Sign In',
+        href: route('/auth/login'),
+        icon: LogIn,
+      },
+      {
+        key: 'register',
+        label: 'Sign Up',
+        href: route('/auth/register'),
+        icon: UserPlus,
+      }
     );
   }
 
@@ -98,7 +153,9 @@ export const Header: React.FC = () => {
 
   return (
     <UIHeader tone="brand" size="xl" position="sticky">
-      <HeaderLogo><Logo /></HeaderLogo>
+      <HeaderLogo>
+        <Logo />
+      </HeaderLogo>
 
       <HeaderNav
         navigation={navigationItems}
