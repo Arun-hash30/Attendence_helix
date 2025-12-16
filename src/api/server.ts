@@ -30,7 +30,10 @@ function checkFrontendExists(distPath: string): boolean {
 }
 
 const app = express();
-const PORT = config.get('server.port', process.env.PORT || 3000);
+
+// FIX: Use process.env.PORT directly, not through AppKit config
+// Render sets PORT=10000, AppKit config may override it
+const PORT = process.env.PORT || config.get('server.port', 3000);
 
 // Middleware (following AppKit recommended order)
 app.use(cors({
@@ -111,7 +114,8 @@ app.get('/health', error.asyncRoute(async (_req, res) => {
       status: 'ok',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      environment: config.get('app.environment', 'development'),
+      environment: process.env.NODE_ENV || 'development',
+      port: PORT,
       database: dbStatus,
       memory: process.memoryUsage()
     };
@@ -129,6 +133,11 @@ app.get('/health', error.asyncRoute(async (_req, res) => {
 async function startServer() {
   try {
     logger.info('Initializing server for Render deployment...');
+    logger.info('Port configuration:', { 
+      envPort: process.env.PORT,
+      appKitPort: config.get('server.port'),
+      finalPort: PORT
+    });
 
     // API routes with auto-discovery
     const apiRouter = await createApiRouter();
@@ -142,7 +151,8 @@ async function startServer() {
       port: PORT,
       nodeEnv: process.env.NODE_ENV,
       frontendExists: frontendExists,
-      distPath: distPath
+      distPath: distPath,
+      render: process.env.RENDER ? 'yes' : 'no'
     });
 
     if (frontendExists) {
@@ -205,10 +215,13 @@ async function startServer() {
     app.use(error.handleErrors());
 
     app.listen(PORT, () => {
-      const serverUrl = `http://localhost:${PORT}`;
+      const serverUrl = process.env.RENDER 
+        ? `https://attendence-helix.onrender.com`
+        : `http://localhost:${PORT}`;
+      
       logger.info('🚀 Server started successfully');
-      logger.info(`📡 Port: ${PORT}`);
-      logger.info(`🔗 Local: ${serverUrl}`);
+      logger.info(`📡 Port: ${PORT} (Render sets PORT=10000)`);
+      logger.info(`🔗 URL: ${serverUrl}`);
       
       if (frontendExists) {
         logger.info('🌐 Frontend: Available at root path (/)');
@@ -223,6 +236,7 @@ async function startServer() {
       if (process.env.RENDER) {
         logger.info('🏗️  Environment: Render.com');
         logger.info('📦 Instance: ' + (process.env.RENDER_INSTANCE_ID || 'unknown'));
+        logger.info('🔧 Render PORT: ' + process.env.PORT);
       }
     });
 
