@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: leave-management
+    env: node
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_fNlm1DKPTgo8@ep-quiet-dawn-adqucatx-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      - key: JWT_SECRET
+        value: jwt_2B3UcEDyMppULvUChyA2cjAIeYR1Z0VJfePVi2LWaqhe83sl
+      - key: VOILA_FRONTEND_KEY
+        value: DISABLED_FOR_RENDER
+      - key: SESSION_SECRET
+        value: session_rDcmkBUnVdGduXh0F7GzXUAr5JbBwpHu
+    healthCheckPath: /health
+    autoDeploy: true
