@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Input } from "@voilajsx/uikit/input";
 import { Button } from "@voilajsx/uikit/button";
 import { Card, CardContent } from "@voilajsx/uikit/card";
@@ -10,7 +10,7 @@ interface Props {
   onSubmit: (data: SalaryStructureInput) => void;
 }
 
-export const SalaryForm: React.FC<Props> = ({ userId, onSubmit }) => {
+export const SalaryForm = ({ userId: _, onSubmit }: Props) => {
   const [formData, setFormData] = useState<SalaryStructureInput>({
     basicSalary: 0,
     hra: 0,

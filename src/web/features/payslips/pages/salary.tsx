@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { PageLayout } from "@voilajsx/uikit/page";
 import { Card, CardContent, CardHeader, CardTitle } from "@voilajsx/uikit/card";
 import { Button } from "@voilajsx/uikit/button";

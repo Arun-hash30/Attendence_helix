@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PageLayout } from "@voilajsx/uikit/page";
 import { Card, CardContent, CardHeader, CardTitle } from "@voilajsx/uikit/card";
 import { Button } from "@voilajsx/uikit/button";
 import { ArrowLeft, Download, Printer, CheckCircle, Clock } from "lucide-react";
 import { Header, Footer, SEO } from "../../../shared/components";
 import { AuthGuard, useAuth } from "../../auth";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { payslipApi } from "../services/payslip.api";
 import { Payslip } from "../types/payslip";
 import { Badge } from "@voilajsx/uikit/badge";
@@ -14,7 +14,6 @@ import { Label } from "@voilajsx/uikit/label";
 
 const PayslipDetailPage = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { token, user } = useAuth();
 
   const [payslip, setPayslip] = useState<Payslip | null>(null);

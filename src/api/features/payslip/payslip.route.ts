@@ -113,7 +113,7 @@ payslipRouter.get('/admin/all', async (req, res) => {
 });
 
 // Get users for payslip generation
-payslipRouter.get('/admin/users', async (req, res) => {
+payslipRouter.get('/admin/users', async (_, res) => {
   try {
     const users = await payslipService.getUsersForPayslip();
     res.json({ 
@@ -195,7 +195,7 @@ payslipRouter.patch('/:id/status', async (req, res) => {
 });
 
 // Get payslip statistics
-payslipRouter.get('/admin/stats', async (req, res) => {
+payslipRouter.get('/admin/stats', async (_, res) => {
   try {
     const stats = await payslipService.getPayslipStats();
     res.json({ 
@@ -212,7 +212,7 @@ payslipRouter.get('/admin/stats', async (req, res) => {
 });
 
 // Get available years
-payslipRouter.get('/years', async (req, res) => {
+payslipRouter.get('/years', async (_, res) => {
   try {
     const years = await payslipService.getAvailableYears();
     res.json({ 
