@@ -1,0 +1,61 @@
+### Get available leave types
+GET http://localhost:3000/api/leave/types
+
+### Get available leave statuses
+GET http://localhost:3000/api/leave/statuses
+
+### Get my leave balance
+GET http://localhost:3000/api/leave/balance/1
+GET http://localhost:3000/api/leave/balance/1?year=2024
+
+### Apply for leave
+POST http://localhost:3000/api/leave/apply/1
+Content-Type: application/json
+
+{
+  "type": "CASUAL",
+  "fromDate": "2024-12-20",
+  "toDate": "2024-12-22",
+  "reason": "Family function",
+  "halfDay": false,
+  "emergency": false
+}
+
+### Get my leave requests
+GET http://localhost:3000/api/leave/my/1
+GET http://localhost:3000/api/leave/my/1?status=PENDING&year=2024&page=1&limit=10
+
+### Get my leave statistics
+GET http://localhost:3000/api/leave/stats/1
+GET http://localhost:3000/api/leave/stats/1?year=2024
+
+### Cancel my leave request
+PUT http://localhost:3000/api/leave/cancel/1/1
+
+### Get all leave requests (admin)
+GET http://localhost:3000/api/leave/admin/all
+GET http://localhost:3000/api/leave/admin/all?status=PENDING&year=2024&page=1&limit=10
+
+### Get users for leave management
+GET http://localhost:3000/api/leave/admin/users
+
+### Get single leave request
+GET http://localhost:3000/api/leave/admin/1
+
+### Update leave status (approve/reject)
+PUT http://localhost:3000/api/leave/admin/status/1
+Content-Type: application/json
+
+{
+  "approverId": 2,
+  "status": "APPROVED",
+  "comments": "Approved as per company policy"
+}
+
+### Get admin leave statistics
+GET http://localhost:3000/api/leave/admin/stats
+GET http://localhost:3000/api/leave/admin/stats?year=2024
+
+### Get leave calendar
+GET http://localhost:3000/api/leave/calendar/2024/12
+GET http://localhost:3000/api/leave/calendar/2024/12?userId=1

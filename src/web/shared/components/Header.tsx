@@ -15,7 +15,10 @@ import {
   Shield,
   LogIn,
   UserPlus,
-  FileText
+  FileText,
+  Calendar,
+  ListChecks,
+  Edit
 } from 'lucide-react';
 
 // ---------------- Logo Component ----------------
@@ -90,19 +93,23 @@ export const Header: React.FC = () => {
         label: 'Profile',
         href: route('/profile'),
         icon: User,
-      },
+      }
+    );
 
+    // Leave Management Navigation
+    // Based on your file structure, you have leave management pages
+    navigationItems.push(
       {
-        key: 'leave-history',
-        label: 'Leave History',
-        href: route('/leave/leave.history'),
-        icon: FileText,
+        key: 'my-leaves',
+        label: 'My Leaves',
+        href: route('/leaves/my-leaves'),
+        icon: Calendar,
       },
       {
         key: 'apply-leave',
         label: 'Apply Leave',
-        href: route('/leave/leave.apply'),
-        icon: FileText,
+        href: route('/leaves/apply'),
+        icon: Edit,
       }
     );
 
@@ -116,10 +123,10 @@ export const Header: React.FC = () => {
           icon: Shield,
         },
         {
-          key: 'leave-admin',
-          label: 'Leave Admin',
-          href: route('/leave/leave.admin'),
-          icon: FileText,
+          key: 'leave-manage',
+          label: 'Manage Leaves',
+          href: route('/leaves/manage'),
+          icon: ListChecks,
         }
       );
     }
