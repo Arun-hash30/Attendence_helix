@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Header as UIHeader, HeaderLogo, HeaderNav } from '@voilajsx/uikit/header';
+import { Header as UIHeader, HeaderLogo } from '@voilajsx/uikit/header';
 import { Button } from '@voilajsx/uikit/button';
 import { useTheme } from '@voilajsx/uikit/theme-provider';
 import { useAuth } from '../../features/auth';
 import { hasRole, route } from '../utils';
-import type { NavigationItem } from '@voilajsx/uikit';
 import {
   LayoutDashboard,
   User,
@@ -18,7 +17,8 @@ import {
   FileText,
   Calendar,
   ListChecks,
-  Edit
+  Edit,
+  ChevronDown
 } from 'lucide-react';
 
 // ---------------- Logo Component ----------------
@@ -67,114 +67,289 @@ export const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const [leavesDropdownOpen, setLeavesDropdownOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const leavesDropdownRef = useRef<HTMLDivElement>(null);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
 
-  const navigationItems: NavigationItem[] = [];
-
-  if (isAuthenticated) {
-    // Authenticated user navigation
-    navigationItems.push(
-      {
-        key: 'dashboard',
-        label: 'Dashboard',
-        href: route('/dashboard'),
-        icon: LayoutDashboard,
-      },
-
-      // ⭐ Payslips Added ⭐
-      {
-        key: 'payslips',
-        label: 'Payslips',
-        href: route('/payslips'),
-        icon: FileText,
-      },
-
-      {
-        key: 'profile',
-        label: 'Profile',
-        href: route('/profile'),
-        icon: User,
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (leavesDropdownRef.current && !leavesDropdownRef.current.contains(event.target as Node)) {
+        setLeavesDropdownOpen(false);
       }
-    );
-
-    // Leave Management Navigation
-    // Based on your file structure, you have leave management pages
-    navigationItems.push(
-      {
-        key: 'my-leaves',
-        label: 'My Leaves',
-        href: route('/leaves/my-leaves'),
-        icon: Calendar,
-      },
-      {
-        key: 'apply-leave',
-        label: 'Apply Leave',
-        href: route('/leaves/apply'),
-        icon: Edit,
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+        setUserDropdownOpen(false);
       }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleNavigation = (href: string) => {
+    navigate(href);
+  };
+
+  if (isAuthenticated && user) {
+    // Check if user has admin role
+    const isAdmin = hasRole(user, ['admin.tenant', 'admin.org', 'admin.system']);
+    
+    // Check if current path is under leaves section
+    const isLeavesPath = location.pathname.startsWith('/leaves/');
+    const isProfilePath = location.pathname === route('/profile');
+
+    return (
+      <UIHeader tone="brand" size="xl" position="sticky">
+        <HeaderLogo>
+          <Logo />
+        </HeaderLogo>
+
+        {/* Empty space to push navigation to the right */}
+        <div className="flex-1"></div>
+
+        {/* Main Navigation Bar - Right Side */}
+        <div className="flex items-center gap-4">
+          
+          {/* Dashboard Button */}
+          <Button
+            variant="ghost"
+            className={`${
+              location.pathname === route('/dashboard')
+                ? 'bg-brand-100 text-brand-700'
+                : 'text-brand-600 hover:bg-brand-50 hover:text-brand-700'
+            }`}
+            onClick={() => handleNavigation(route('/dashboard'))}
+          >
+            <LayoutDashboard className="h-4 w-4 mr-2" />
+            Dashboard
+          </Button>
+
+          {/* Payslips Button */}
+          <Button
+            variant="ghost"
+            className={`${
+              location.pathname === route('/payslips')
+                ? 'bg-brand-100 text-brand-700'
+                : 'text-brand-600 hover:bg-brand-50 hover:text-brand-700'
+            }`}
+            onClick={() => handleNavigation(route('/payslips'))}
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Payslips
+          </Button>
+
+          {/* Leaves Dropdown */}
+          <div className="relative" ref={leavesDropdownRef}>
+            <Button
+              variant="ghost"
+              className={`${
+                isLeavesPath || leavesDropdownOpen
+                  ? 'bg-brand-100 text-brand-700'
+                  : 'text-brand-600 hover:bg-brand-50 hover:text-brand-700'
+              }`}
+              onClick={() => setLeavesDropdownOpen(!leavesDropdownOpen)}
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Leaves
+              <ChevronDown className={`h-4 w-4 ml-1 transition-transform ${leavesDropdownOpen ? 'rotate-180' : ''}`} />
+            </Button>
+
+            {/* Leaves Dropdown Menu */}
+            {leavesDropdownOpen && (
+              <div 
+                className="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg border z-50"
+                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+              >
+                {/* My Leaves */}
+                <button
+                  onClick={() => {
+                    navigate(route('/leaves/my-leaves'));
+                    setLeavesDropdownOpen(false);
+                  }}
+                  className={`flex items-center gap-2 w-full px-4 py-2 text-sm text-left transition-colors ${
+                    location.pathname === route('/leaves/my-leaves')
+                      ? 'bg-brand-50 text-brand-700'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <Calendar className="h-4 w-4" />
+                  <span>My Leaves</span>
+                </button>
+
+                {/* Apply Leave */}
+                <button
+                  onClick={() => {
+                    navigate(route('/leaves/apply'));
+                    setLeavesDropdownOpen(false);
+                  }}
+                  className={`flex items-center gap-2 w-full px-4 py-2 text-sm text-left transition-colors ${
+                    location.pathname === route('/leaves/apply')
+                      ? 'bg-brand-50 text-brand-700'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <Edit className="h-4 w-4" />
+                  <span>Apply Leave</span>
+                </button>
+
+                {/* Manage Leaves (Admin Only) */}
+                {isAdmin && (
+                  <button
+                    onClick={() => {
+                      navigate(route('/leaves/manage'));
+                      setLeavesDropdownOpen(false);
+                    }}
+                    className={`flex items-center gap-2 w-full px-4 py-2 text-sm text-left transition-colors ${
+                      location.pathname === route('/leaves/manage')
+                        ? 'bg-brand-50 text-brand-700'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <ListChecks className="h-4 w-4" />
+                    <span>Manage Leaves</span>
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Admin Button (Admin Only) */}
+          {isAdmin && (
+            <Button
+              variant="ghost"
+              className={`${
+                location.pathname === route('/admin')
+                  ? 'bg-brand-100 text-brand-700'
+                  : 'text-brand-600 hover:bg-brand-50 hover:text-brand-700'
+              }`}
+              onClick={() => handleNavigation(route('/admin'))}
+            >
+              <Shield className="h-4 w-4 mr-2" />
+              Admin
+            </Button>
+          )}
+
+          {/* User Dropdown (Profile & Sign Out) */}
+          <div className="relative" ref={userDropdownRef}>
+            <Button
+              variant="ghost"
+              className={`${
+                isProfilePath || userDropdownOpen
+                  ? 'bg-brand-100 text-brand-700'
+                  : 'text-brand-600 hover:bg-brand-50 hover:text-brand-700'
+              }`}
+              onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+            >
+              <User className="h-4 w-4 mr-2" />
+              {user.name || 'Profile'}
+              <ChevronDown className={`h-4 w-4 ml-1 transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} />
+            </Button>
+
+            {/* User Dropdown Menu */}
+            {userDropdownOpen && (
+              <div 
+                className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg border z-50"
+                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+              >
+                {/* User Info */}
+                <div className="px-4 py-3 border-b">
+                  <div className="font-medium">{user.name || 'User'}</div>
+                  <div className="text-xs text-gray-500">{user.email || 'user@example.com'}</div>
+                  {user.role && (
+                    <div className="text-xs text-gray-400 mt-1">Role: {user.role}</div>
+                  )}
+                </div>
+
+                {/* Profile */}
+                <button
+                  onClick={() => {
+                    navigate(route('/profile'));
+                    setUserDropdownOpen(false);
+                  }}
+                  className={`flex items-center gap-2 w-full px-4 py-2 text-sm text-left transition-colors ${
+                    isProfilePath
+                      ? 'bg-brand-50 text-brand-700'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <User className="h-4 w-4" />
+                  <span>Profile</span>
+                </button>
+
+                {/* Sign Out */}
+                <div className="border-t">
+                  <button
+                    onClick={() => {
+                      navigate(route('/logout'));
+                      setUserDropdownOpen(false);
+                    }}
+                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+        </div>
+
+        {/* Theme Actions - Right Side */}
+        <div className="flex items-center ml-4">
+          <ThemeActions />
+        </div>
+      </UIHeader>
     );
-
-    // Admin-only navigation
-    if (user && hasRole(user, ['admin.tenant', 'admin.org', 'admin.system'])) {
-      navigationItems.push(
-        {
-          key: 'admin',
-          label: 'Admin',
-          href: route('/admin'),
-          icon: Shield,
-        },
-        {
-          key: 'leave-manage',
-          label: 'Manage Leaves',
-          href: route('/leaves/manage'),
-          icon: ListChecks,
-        }
-      );
-    }
-
-    // Sign Out
-    navigationItems.push({
-      key: 'logout',
-      label: 'Sign Out',
-      href: route('/logout'),
-      icon: LogOut,
-    });
   } else {
-    // Public navigation
-    navigationItems.push(
-      {
-        key: 'login',
-        label: 'Sign In',
-        href: route('/auth/login'),
-        icon: LogIn,
-      },
-      {
-        key: 'register',
-        label: 'Sign Up',
-        href: route('/auth/register'),
-        icon: UserPlus,
-      }
+    // Public navigation for non-authenticated users
+    return (
+      <UIHeader tone="brand" size="xl" position="sticky">
+        <HeaderLogo>
+          <Logo />
+        </HeaderLogo>
+
+        {/* Empty space to push navigation to the right */}
+        <div className="flex-1"></div>
+
+        <div className="flex items-center gap-4">
+          {/* Sign In Button */}
+          <Button
+            variant="ghost"
+            className={`${
+              location.pathname === route('/auth/login')
+                ? 'bg-brand-100 text-brand-700'
+                : 'text-brand-600 hover:bg-brand-50 hover:text-brand-700'
+            }`}
+            onClick={() => handleNavigation(route('/auth/login'))}
+          >
+            <LogIn className="h-4 w-4 mr-2" />
+            Sign In
+          </Button>
+
+          {/* Sign Up Button */}
+          <Button
+            variant="ghost"
+            className={`${
+              location.pathname === route('/auth/register')
+                ? 'bg-brand-100 text-brand-700'
+                : 'text-brand-600 hover:bg-brand-50 hover:text-brand-700'
+            }`}
+            onClick={() => handleNavigation(route('/auth/register'))}
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            Sign Up
+          </Button>
+        </div>
+
+        {/* Theme Actions */}
+        <div className="flex items-center ml-4">
+          <ThemeActions />
+        </div>
+      </UIHeader>
     );
   }
-
-  const handleNavigation = (href: string) => navigate(href);
-
-  return (
-    <UIHeader tone="brand" size="xl" position="sticky">
-      <HeaderLogo>
-        <Logo />
-      </HeaderLogo>
-
-      <HeaderNav
-        navigation={navigationItems}
-        currentPath={location.pathname}
-        onNavigate={handleNavigation}
-      />
-
-      <div className="flex items-center ml-2">
-        <ThemeActions />
-      </div>
-    </UIHeader>
-  );
 };
 
 // Export PublicHeader for backward compatibility
